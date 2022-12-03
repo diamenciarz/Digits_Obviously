@@ -50,10 +50,10 @@ m, _ = np.shape(X)
 sel = np.random.choice(range(X.shape[0]), 100)
 sel = X[sel, :]
 
-displayData(sel)
+# displayData(sel)
+# input('Program paused. Press enter to continue')
 
 
-input('Program paused. Press enter to continue')
 
 
 # ================ Part 2: Loading Pameters ================
@@ -82,8 +82,10 @@ nn_params = np.hstack((Theta1_1d, Theta2_1d))
 
 pred = predict(Theta1, Theta2, X)
 print('Training Set Accuracy: ', (pred == y).mean()*100)
-
+print(pred[:100])
+print(y[:100])
 input('Program paused. Press enter to continue')
+
 
 #  To give you an idea of the network's output, you can also run
 #  through the examples one at the a time to see what it is predicting.
