@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 def randInitializeWeights(L_in, L_out):
 #RANDINITIALIZEWEIGHTS Randomly initialize the weights of a layer with L_in
@@ -20,9 +21,13 @@ def randInitializeWeights(L_in, L_out):
 #
 # Note: The first row of W corresponds to the parameters for the bias units
 #
+#   The range of the uniform
+    e = 0.12
+    for y in range(W.shape[0]):
+        for x in range(W.shape[1]):
+            rand_value = random.uniform(-e,e)
+            W[y,x] = rand_value
 
-
-    
 # =========================================================================
 
     return W
