@@ -2,10 +2,10 @@
 
 #  Instructions
 #  ------------
-# 
-#  This file contains code that helps you get started. 
-#  You will need to complete the following functions 
-#  
+#
+#  This file contains code that helps you get started.
+#  You will need to complete the following functions
+#
 #     predict.m
 #     sigmoidGradient.m
 #     randInitializeWeights.m
@@ -27,15 +27,21 @@ from checkNNGradients import checkNNGradients
 from fmincg import fmincg
 
 # Setup the parameters you will use for this exercise
-input_layer_size = 400;     # 20x20 Input Images of Digits
-hidden_layer_size = 25;     # 25 hidden units
-num_labels = 10;            # 10 labels, from 0 to 9   
-                            # (note that we have mapped "0" to label 9 to follow
-                            # the same structure used in the MatLab version)
+input_layer_size = 400     # 20x20 Input Images of Digits
+hidden_layer_size = 25     # 25 hidden units
+num_labels = 10            # 10 labels, from 0 to 9
+# (note that we have mapped "0" to label 9 to follow
+# the same structure used in the MatLab version)
 
 # =========== Part 1: Loading and Visualizing Data =============
-#  We start the exercise by first loading and visualizing the dataset. 
+#  We start the exercise by first loading and visualizing the dataset.
 #  You will be working with a dataset that contains handwritten digits.
+
+def correct_classes(Ys):
+    for i in range(len(Ys)):
+        if Ys[i] == 10:
+            Ys[i] = 0
+    return Ys
 
 # Load Training Data
 print('Loading and Visualizing Data ...')
@@ -43,27 +49,27 @@ print('Loading and Visualizing Data ...')
 mat = scipy.io.loadmat('digitdata.mat')
 X = mat['X']
 y = mat['y']
-y = np.squeeze(y)
+y = correct_classes(np.squeeze(y))
 m, _ = np.shape(X)
 
 # Randomly select 100 data points to display
 sel = np.random.choice(range(X.shape[0]), 100)
-sel = X[sel,:]
+sel = X[sel, :]
 
-displayData(sel)
+# displayData(sel)
 
 
 input('Program paused. Press enter to continue')
 
 
 # ================ Part 2: Loading Pameters ================
-# In this part of the exercise, we load some pre-initialized 
+# In this part of the exercise, we load some pre-initialized
 # neural network parameters.
 
 print('Loading Saved Neural Network Parameters ...')
 
 # Load the weights into variables Theta1 and Theta2
-mat = scipy.io.loadmat('debugweights.mat');
+mat = scipy.io.loadmat('debugweights.mat')
 
 # Unroll parameters
 Theta1 = mat['Theta1']
@@ -80,15 +86,16 @@ nn_params = np.hstack((Theta1_1d, Theta2_1d))
 #  neural network to predict the labels of the training set. This lets
 #  you compute the training set accuracy.
 
-pred = predict(Theta1, Theta2, X);
-print('Training Set Accuracy: ', (pred == y).mean()*100)
+pred = predict(Theta1, Theta2, X)
+accuracies = (pred == y).mean()*100
+print('Training Set Accuracy: ', accuracies)
 
 input('Program paused. Press enter to continue')
 
 #  To give you an idea of the network's output, you can also run
 #  through the examples one at the a time to see what it is predicting.
 #  Change the value of the show_examples variable to true to view examples.
-show_examples = False;
+show_examples = False
 
 if show_examples:
     #  Randomly permute examples
@@ -96,14 +103,14 @@ if show_examples:
 
     for i in range(m):
         print(i)
-        # Display 
+        # Display
         print('Displaying Example Image')
         tmp = np.transpose(np.expand_dims(X[rp[i], :], axis=1))
         displayData(tmp)
-        
+
         pred = predict(Theta1, Theta2, tmp)
-        print('Neural Network Prediction: ', pred, '(digit ', pred%10, ')')
-        
+        print('Neural Network Prediction: ', pred, '(digit ', pred % 10, ')')
+
         input('Program paused. Press enter to continue')
 
 
@@ -137,7 +144,7 @@ initial_nn_params = np.hstack((initial_Theta1, initial_Theta2))
 
 
 # =============== Part 6: Implement Backpropagation ===============
-#  Now you will implement the backpropagation algorithm for the neural 
+#  Now you will implement the backpropagation algorithm for the neural
 #  network. You should add code to nnCostFunction.m to return the partial
 #  derivatives of the parameters.
 #
@@ -156,22 +163,22 @@ input('Program paused. Press enter to continue')
 
 print('Checking Backpropagation (w/ Regularization) ... ')
 #
-##  Check gradients by running checkNNGradients
+# Check gradients by running checkNNGradients
 lambda_value = 3
 checkNNGradients(lambda_value)
 
 # Also output the costFunction debugging values
-debug_J  = nnCostFunction(nn_params, input_layer_size, hidden_layer_size, 
-                          num_labels, X, y, lambda_value)
+debug_J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size,
+                         num_labels, X, y, lambda_value)
 
-print('Cost at (fixed) debugging parameters (w/ lambda = 10): ',  debug_J[0][0], 
+print('Cost at (fixed) debugging parameters (w/ lambda = 10): ',  debug_J[0][0],
       '(this value should be about 0.576051)')
 
 input('Program paused. Press enter to continue')
 
 
 # =================== Part 8: Training NN ===================
-#  You have now implemented all the code necessary to train a neural 
+#  You have now implemented all the code necessary to train a neural
 #  network. To train your neural network, we will now use "fmincg", which
 #  is a function which works similarly to "fminunc". Recall that these
 #  advanced optimizers are able to train our cost functions efficiently as
@@ -189,25 +196,27 @@ lambda_value = 1
 # Create "short hand" for the cost function to be minimized
 y = np.expand_dims(y, axis=1)
 
-costFunction = lambda p : nnCostFunction(p, input_layer_size, hidden_layer_size, 
-                                         num_labels, X, y, lambda_value)
+
+def costFunction(p): return nnCostFunction(p, input_layer_size, hidden_layer_size,
+                                           num_labels, X, y, lambda_value)
+
 
 # Now, costFunction is a function that takes in only one argument (the
 # neural network parameters)
 [nn_params, cost] = fmincg(costFunction, initial_nn_params, MaxIter)
 
 # Obtain Theta1 and Theta2 back from nn_params
-Theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)], 
-                              (hidden_layer_size, (input_layer_size + 1)), order='F')
+Theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)],
+                    (hidden_layer_size, (input_layer_size + 1)), order='F')
 Theta2 = np.reshape(nn_params[((hidden_layer_size * (input_layer_size + 1))):],
-                              (num_labels, (hidden_layer_size + 1)), order='F')
+                    (num_labels, (hidden_layer_size + 1)), order='F')
 
 input('Program paused. Press enter to continue')
 
 
 # ================= Part 9: Visualize Weights =================
-#  You can now "visualize" what the neural network is learning by 
-#  displaying the hidden units to see what features they are capturing in 
+#  You can now "visualize" what the neural network is learning by
+#  displaying the hidden units to see what features they are capturing in
 #  the data.
 
 print('\nVisualizing Neural Network... \n')
@@ -224,9 +233,5 @@ input('Program paused. Press enter to continue')
 #  you compute the training set accuracy.
 
 pred = predict(Theta1, Theta2, X)
-pred = np.expand_dims(pred,axis=1)
+pred = np.expand_dims(pred, axis=1)
 print('Training Set Accuracy: ', (pred == y).mean()*100)
-
-
-
-
