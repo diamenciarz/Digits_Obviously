@@ -23,11 +23,7 @@ from displayData import displayData
 from sigmoidGradient import sigmoidGradient
 from randInitializeWeights import randInitializeWeights
 from nnCostFunction import nnCostFunction
-import random
 from checkNNGradients import checkNNGradients
-import pandas as pd
-from displayData import correct_type
-from scipy.io import loadmat
 from fmincg import fmincg
 
 # Setup the parameters you will use for this exercise
@@ -41,50 +37,20 @@ num_labels = 10            # 10 labels, from 0 to 9
 #  We start the exercise by first loading and visualizing the dataset.
 #  You will be working with a dataset that contains handwritten digits.
 
-def correct_classes(Ys):
-    for i in range(len(Ys)):
-        Ys[i] += 1
-    return Ys
-
-def build_data(Xs, Ys):
-    data = []
-    for i in range(Ys.shape[0]):
-        row = [Ys[i]]
-        for x in Xs[i]:
-            row.append(x)
-        data.append(row)
-    data = np.array(data, dtype=object)
-    return data
-
-def build_data_frame(data):
-    columns = ["Classes"]
-    for i in range(1, data.shape[1]):
-        columns.append(i)
-
-    df = pd.DataFrame(data=data, index=np.arange(data.shape[0]), columns = columns)
-    df
-    return df
-
 # Load Training Data
 print('Loading and Visualizing Data ...')
 
-
-dataset = loadmat("digitdata.mat")
-X = np.squeeze(dataset.get("X"))
-y = np.squeeze(dataset.get("y"))
-
+mat = scipy.io.loadmat('digitdata.mat')
+X = mat['X']
+y = mat['y']
+y = np.squeeze(y)
 m, _ = np.shape(X)
 
-data = build_data(X, y)
-df = build_data_frame(data)
-
 # Randomly select 100 data points to display
-data_indexes = range(data.shape[0])
-choice_100 = random.choices(data_indexes, k=100)
-classes_100 = correct_type(np.array(df.iloc[choice_100, 0]))
-values_100 = correct_type(np.array(df.iloc[choice_100, 1:]))
+sel = np.random.choice(range(X.shape[0]), 100)
+sel = X[sel, :]
 
-displayData(values_100)
+displayData(sel)
 
 
 input('Program paused. Press enter to continue')
@@ -97,15 +63,16 @@ input('Program paused. Press enter to continue')
 print('Loading Saved Neural Network Parameters ...')
 
 # Load the weights into variables Theta1 and Theta2
-debug_weights = loadmat('debugweights.mat');
+mat = scipy.io.loadmat('debugweights.mat')
 
 # Unroll parameters
-Theta1 = debug_weights['Theta1']
+Theta1 = mat['Theta1']
 Theta1_1d = np.reshape(Theta1, Theta1.size, order='F')
-Theta2 = debug_weights['Theta2']
+Theta2 = mat['Theta2']
 Theta2_1d = np.reshape(Theta2, Theta2.size, order='F')
 
 nn_params = np.hstack((Theta1_1d, Theta2_1d))
+
 
 # ================= Part 3: Implement Predict =================
 #  After training the neural network, we would like to use it to predict
@@ -114,8 +81,7 @@ nn_params = np.hstack((Theta1_1d, Theta2_1d))
 #  you compute the training set accuracy.
 
 pred = predict(Theta1, Theta2, X)
-accuracies = (pred == classes_100).mean()*100
-print('Training Set Accuracy: ', accuracies)
+print('Training Set Accuracy: ', (pred == y).mean()*100)
 
 input('Program paused. Press enter to continue')
 
