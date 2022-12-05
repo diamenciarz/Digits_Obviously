@@ -68,6 +68,7 @@ def fmincg(f, X_original, length=100):#, P1, P2, P3, P4, P5):
     i = 0                                            # zero the run length counter
     ls_failed = 0                             # no previous line search has failed
     fX = np.empty([])#[]
+    all_costs = np.zeros([length,1])
     f1, df1 = f(X)#eval(argstr)                      # get function value and gradient
     i = i + (length<0)                                            # count epochs?!
     s = -df1                                        # search direction is steepest
@@ -165,6 +166,7 @@ def fmincg(f, X_original, length=100):#, P1, P2, P3, P4, P5):
         else:
             fX = np.transpose(np.concatenate((np.transpose(fX), f1)))
         print(S, i, '| Cost: ', f1)
+        all_costs[i] = f1
         s = (np.dot(np.transpose(df2), df2)-np.dot(np.transpose(df1), df2))/np.dot(np.transpose(df1), df1)*s - df2      # Polack-Ribiere direction
         # swap derivatives
         tmp = df1
@@ -197,4 +199,4 @@ def fmincg(f, X_original, length=100):#, P1, P2, P3, P4, P5):
         ls_failed = 1                                    # this line search failed
 
 
-    return X, fX
+    return X, fX, all_costs

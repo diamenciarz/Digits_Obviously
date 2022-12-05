@@ -29,11 +29,14 @@ def checkNNGradients(lambda_value=0):
     
     cost, grad = costFunc(nn_params)
     numgrad = computeNumericalGradient(costFunc, np.expand_dims(nn_params, axis=1))
+    diff = numgrad - grad
 
 
 # Visually examine the two gradient computations.  The two columns
 # you get should be very similar. 
-    print(numgrad, grad)
+    print(numgrad)
+    print(grad)
+    print(diff)
     print('The above two columns you get should be very similar.\n (Left-Numerical Gradient, Right-(Your) Analytical Gradient)\n\n')
 
 # Evaluate the norm of the difference between two solutions.  

@@ -80,11 +80,11 @@ nn_params = np.hstack((Theta1_1d, Theta2_1d))
 #  neural network to predict the labels of the training set. This lets
 #  you compute the training set accuracy.
 
-pred = predict(Theta1, Theta2, X)
-print('Training Set Accuracy: ', (pred == y).mean()*100)
-print(pred[:100])
-print(y[:100])
-input('Program paused. Press enter to continue')
+# pred = predict(Theta1, Theta2, X)
+# print('Training Set Accuracy: ', (pred == y).mean()*100)
+# print(pred[:100])
+# print(y[:100])
+# input('Program paused. Press enter to continue')
 
 
 #  To give you an idea of the network's output, you can also run
@@ -119,7 +119,7 @@ print('Evaluating sigmoid gradient...')
 example = np.array([-15, -1, -0.5, 0, 0.5, 1, 15])
 g = sigmoidGradient(example)
 print('Sigmoid gradient evaluated at', example, ':')
-print(g)
+# print(g)
 
 
 # ================ Part 5: Initializing Pameters ================
@@ -129,13 +129,13 @@ print(g)
 
 print('Initializing Neural Network Parameters ...')
 
-initial_Theta1 = randInitializeWeights(input_layer_size, hidden_layer_size)
-initial_Theta2 = randInitializeWeights(hidden_layer_size, num_labels)
+unrolled_Theta1 = randInitializeWeights(input_layer_size, hidden_layer_size)
+unrolled_Theta2 = randInitializeWeights(hidden_layer_size, num_labels)
 
 # Unroll parameters
-initial_Theta1 = np.reshape(initial_Theta1, initial_Theta1.size, order='F')
-initial_Theta2 = np.reshape(initial_Theta2, initial_Theta2.size, order='F')
-initial_nn_params = np.hstack((initial_Theta1, initial_Theta2))
+unrolled_Theta1 = np.reshape(unrolled_Theta1, unrolled_Theta1.size, order='F')
+unrolled_Theta2 = np.reshape(unrolled_Theta2, unrolled_Theta2.size, order='F')
+unrolled_nn_params = np.hstack((unrolled_Theta1, unrolled_Theta2))
 
 
 # =============== Part 6: Implement Backpropagation ===============
@@ -146,9 +146,9 @@ initial_nn_params = np.hstack((initial_Theta1, initial_Theta2))
 print('Checking Backpropagation...')
 
 #  Check gradients by running checkNNGradients
-checkNNGradients()
+# checkNNGradients()
 
-input('Program paused. Press enter to continue')
+# input('Program paused. Press enter to continue')
 
 
 # =============== Part 7: Implement Regularization ===============
@@ -160,16 +160,16 @@ print('Checking Backpropagation (w/ Regularization) ... ')
 #
 # Check gradients by running checkNNGradients
 lambda_value = 3
-checkNNGradients(lambda_value)
+# checkNNGradients(lambda_value)
 
 # Also output the costFunction debugging values
-debug_J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size,
-                         num_labels, X, y, lambda_value)
+# debug_J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size,
+#                          num_labels, X, y, lambda_value)
 
-print('Cost at (fixed) debugging parameters (w/ lambda = 10): ',  debug_J[0][0],
-      '(this value should be about 0.576051)')
+# print('Cost at (fixed) debugging parameters (w/ lambda = 10): ',  debug_J[0][0],
+#       '(this value should be about 0.576051)')
 
-input('Program paused. Press enter to continue')
+# input('Program paused. Press enter to continue')
 
 
 # =================== Part 8: Training NN ===================
@@ -186,7 +186,7 @@ print('Training Neural Network...')
 MaxIter = 150
 
 #  You should also try different values of lambda
-lambda_value = 1
+lambda_value = 0.001
 
 # Create "short hand" for the cost function to be minimized
 y = np.expand_dims(y, axis=1)
@@ -198,8 +198,8 @@ def costFunction(p): return nnCostFunction(p, input_layer_size, hidden_layer_siz
 
 # Now, costFunction is a function that takes in only one argument (the
 # neural network parameters)
-[nn_params, cost] = fmincg(costFunction, initial_nn_params, MaxIter)
-
+[nn_params, cost, all_costs] = fmincg(costFunction, unrolled_nn_params, MaxIter)
+print(all_costs)
 # Obtain Theta1 and Theta2 back from nn_params
 Theta1 = np.reshape(nn_params[0:hidden_layer_size * (input_layer_size + 1)],
                     (hidden_layer_size, (input_layer_size + 1)), order='F')

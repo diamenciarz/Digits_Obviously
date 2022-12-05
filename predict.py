@@ -42,7 +42,6 @@ def predict(Theta1, Theta2, Xs):
     z2 = np.dot(a1,Theta1.T)
 
     a2 = add_row_of_ones(sigmoid(z2))
-    print(a2.shape)
     z3 = np.dot(a2,Theta2.T)
 
     a3 = sigmoid(z3)
